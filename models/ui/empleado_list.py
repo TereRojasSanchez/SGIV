@@ -1,9 +1,12 @@
-
 import flet as ft
 
 from dao.empleado_dao import EmpleadoDAO
 from models.ui.empleado_form import empleado_form
 
+
+# ==========================================================
+# COLORES
+# ==========================================================
 
 VIOLETA = "#683266"
 PURPURA = "#8E618C"
@@ -11,74 +14,207 @@ LILA = "#CE93D8"
 FONDO = "#F8F2FA"
 BLANCO = "#FFFFFF"
 ROJO = "#D32F2F"
+NEGRO = "#000000"
+
+PURPURA_CELDAS = "#E1BEE7"
+
 
 def empleados_list(regresar, agregar_empleado):
 
     dao = EmpleadoDAO()
 
+    # ==========================================================
+    # MENSAJE
+    # ==========================================================
 
     mensaje = ft.Text(
         "",
-        size=16,
+        size=15,
+        weight=ft.FontWeight.BOLD,
         color=VIOLETA
     )
 
+    # ==========================================================
+    # TABLA
+    # ==========================================================
+
     tabla = ft.DataTable(
 
+        # COLOR DEL ENCABEZADO
         heading_row_color=VIOLETA,
 
+        # COLOR DE LAS FILAS
+        data_row_color=PURPURA_CELDAS,
+
+        # LINEAS VERTICALES
+        vertical_lines=ft.BorderSide(
+            width=1,
+            color=NEGRO
+        ),
+
+        # LINEAS HORIZONTALES
+        horizontal_lines=ft.BorderSide(
+            width=1,
+            color=NEGRO
+        ),
+
+        # BORDE
+        border=ft.Border.all(
+            width=1,
+            color=NEGRO
+        ),
+
+        # TEXTO DEL ENCABEZADO
         heading_text_style=ft.TextStyle(
             color=BLANCO,
             weight=ft.FontWeight.BOLD,
-            size=16
+            size=14
         ),
 
-        divider_thickness=0,
-
+        # FILAS MÁS COMPACTAS
         data_row_min_height=65,
 
-        column_spacing=45,
+        # MENOS ESPACIO ENTRE COLUMNAS
+        column_spacing=20,
 
         columns=[
-            ft.DataColumn(
-                ft.Text("Estado")
-            ),
+
+            # ==================================================
+            # ESTADO
+            # ==================================================
 
             ft.DataColumn(
-                ft.Text("Nombre")
+                ft.Container(
+                    width=75,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Estado",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
             ),
 
-            ft.DataColumn(
-                ft.Text("Usuario")
-            ),
+            # ==================================================
+            # NOMBRE
+            # ==================================================
 
             ft.DataColumn(
-                ft.Text("Rol")
+                ft.Container(
+                    width=190,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Nombre",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
             ),
 
-            ft.DataColumn(
-                ft.Text("Editar")
-            ),
+            # ==================================================
+            # USUARIO
+            # ==================================================
 
             ft.DataColumn(
-                ft.Text("Eliminar")
+                ft.Container(
+                    width=140,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Usuario",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
+            ),
+
+            # ==================================================
+            # ROL
+            # ==================================================
+
+            ft.DataColumn(
+                ft.Container(
+                    width=140,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Rol",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
+            ),
+
+            # ==================================================
+            # EDITAR
+            # ==================================================
+
+            ft.DataColumn(
+                ft.Container(
+                    width=75,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Editar",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
+            ),
+
+            # ==================================================
+            # ELIMINAR
+            # ==================================================
+
+            ft.DataColumn(
+                ft.Container(
+                    width=80,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Text(
+                        "Eliminar",
+                        color=BLANCO,
+                        weight=ft.FontWeight.BOLD,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER
+                    )
+                )
             )
         ],
 
         rows=[]
     )
 
+    # ==========================================================
     # EDITAR EMPLEADO
+    # ==========================================================
+
     def editar(id_empleado):
+
         try:
+
             empleados = dao.obtener_todo()
+
             empleado = None
+
             for e in empleados:
+
                 if e.id == id_empleado:
                     empleado = e
                     break
+
             if empleado is None:
-                mensaje.value = "No se encontró el empleado."
+
+                mensaje.value = (
+                    "No se encontró el empleado."
+                )
+
                 mensaje.color = ROJO
 
                 if tabla.page:
@@ -86,7 +222,6 @@ def empleados_list(regresar, agregar_empleado):
 
                 return
 
-            # Mostrar formulario de edición
             tabla_container.content = empleado_form(
                 regresar,
                 empleado
@@ -105,47 +240,61 @@ def empleados_list(regresar, agregar_empleado):
             if tabla.page:
                 tabla.page.update()
 
+    # ==========================================================
     # ELIMINAR EMPLEADO
+    # ==========================================================
 
     def confirmar_eliminar(id_empleado):
 
         try:
-            # BUSCAR EMPLEADO
-            empleado = dao.obtener_por_id(id_empleado)
+
+            empleado = dao.obtener_por_id(
+                id_empleado
+            )
+
             if empleado is None:
+
                 mensaje.value = (
                     "No se encontró el empleado."
                 )
 
                 mensaje.color = ROJO
+
                 if tabla.page:
                     tabla.page.update()
+
                 return
-            
+
             nombre_empleado = (
                 f"{empleado.nombre} "
                 f"{empleado.apellido_paterno}"
             )
 
+            # ==================================================
             # CANCELAR
+            # ==================================================
+
             def cancelar(e):
 
                 dialog.open = False
-
                 e.page.update()
 
-            # ELIMINAR CONFIRMADO
+            # ==================================================
+            # ELIMINAR
+            # ==================================================
+
             def eliminar_confirmado(e):
+
                 try:
+
                     dao.eliminar(id_empleado)
+
                     dialog.open = False
 
                     cargar_tabla()
 
-                    # Mostrar mensaje
                     mensaje.value = (
-                        f"El empleado "
-                        f"{nombre_empleado} "
+                        f"El empleado {nombre_empleado} "
                         f"fue eliminado correctamente."
                     )
 
@@ -164,7 +313,10 @@ def empleados_list(regresar, agregar_empleado):
 
                 e.page.update()
 
-            # VENTANA DE CONFIRMACIÓN
+            # ==================================================
+            # DIALOGO
+            # ==================================================
+
             dialog = ft.AlertDialog(
 
                 modal=True,
@@ -195,7 +347,8 @@ def empleados_list(regresar, agregar_empleado):
 
                         ft.Text(
                             "¿Deseas eliminar este empleado?",
-                            size=16
+                            size=16,
+                            color=NEGRO
                         ),
 
                         ft.Text(
@@ -215,15 +368,18 @@ def empleados_list(regresar, agregar_empleado):
 
                 actions=[
 
-                    # BOTÓN CANCELAR
                     ft.OutlinedButton(
+
                         content=ft.Text(
                             "Cancelar"
                         ),
 
                         icon=ft.Icons.CANCEL,
+
                         style=ft.ButtonStyle(
+
                             color=VIOLETA,
+
                             side=ft.BorderSide(
                                 width=1,
                                 color=LILA
@@ -232,8 +388,6 @@ def empleados_list(regresar, agregar_empleado):
 
                         on_click=cancelar
                     ),
-
-                    # BOTÓN ELIMINAR
 
                     ft.ElevatedButton(
 
@@ -251,13 +405,17 @@ def empleados_list(regresar, agregar_empleado):
                     )
                 ],
 
-                actions_alignment=ft.MainAxisAlignment.END
+                actions_alignment=(
+                    ft.MainAxisAlignment.END
+                )
             )
 
-            # MOSTRAR DIÁLOGO
             if tabla.page:
+
                 tabla.page.dialog = dialog
+
                 dialog.open = True
+
                 tabla.page.update()
 
         except Exception as error:
@@ -272,117 +430,245 @@ def empleados_list(regresar, agregar_empleado):
             if tabla.page:
                 tabla.page.update()
 
+    # ==========================================================
     # CARGAR TABLA
+    # ==========================================================
+
     def cargar_tabla(e=None):
+
         tabla.rows.clear()
+
         try:
+
             empleados = dao.obtener_todo()
+
             for empleado in empleados:
+
+                # ==============================================
+                # ESTADO
+                # ==============================================
+
+                estado = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.Switch(
+
+                        value=bool(
+                            empleado.activo
+                        ),
+
+                        active_color=PURPURA
+                    )
+                )
+
+                # ==============================================
+                # NOMBRE
+                # ==============================================
+
+                nombre = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.Row(
+
+                        controls=[
+
+                            ft.CircleAvatar(
+
+                                radius=18,
+
+                                bgcolor=LILA,
+
+                                content=ft.Icon(
+                                    ft.Icons.PERSON,
+                                    color=VIOLETA,
+                                    size=21
+                                )
+                            ),
+
+                            ft.Text(
+
+                                f"{empleado.nombre} "
+                                f"{empleado.apellido_paterno}",
+
+                                size=13,
+
+                                weight=ft.FontWeight.BOLD,
+
+                                color=NEGRO,
+
+                                text_align=(
+                                    ft.TextAlign.CENTER
+                                )
+                            )
+                        ],
+
+                        alignment=(
+                            ft.MainAxisAlignment.CENTER
+                        ),
+
+                        vertical_alignment=(
+                            ft.CrossAxisAlignment.CENTER
+                        ),
+
+                        spacing=7
+                    )
+                )
+
+                # ==============================================
+                # USUARIO
+                # ==============================================
+
+                usuario = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.Text(
+
+                        empleado.usuario
+                        if empleado.usuario
+                        else "",
+
+                        size=13,
+
+                        weight=ft.FontWeight.BOLD,
+
+                        color=NEGRO,
+
+                        text_align=(
+                            ft.TextAlign.CENTER
+                        )
+                    )
+                )
+
+                # ==============================================
+                # ROL
+                # ==============================================
+
+                rol = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.Container(
+
+                        padding=7,
+
+                        bgcolor="#EBD7F2",
+
+                        border_radius=18,
+
+                        content=ft.Text(
+
+                            empleado.puesto_usuario
+                            if empleado.puesto_usuario
+                            else "Sin rol",
+
+                            color=VIOLETA,
+
+                            weight=ft.FontWeight.BOLD,
+
+                            size=12,
+
+                            text_align=(
+                                ft.TextAlign.CENTER
+                            )
+                        )
+                    )
+                )
+
+                # ==============================================
+                # EDITAR
+                # ==============================================
+
+                editar_boton = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.IconButton(
+
+                        icon=ft.Icons.EDIT,
+
+                        icon_color=PURPURA,
+
+                        icon_size=22,
+
+                        tooltip="Editar empleado",
+
+                        on_click=lambda e,
+                        id=empleado.id:
+                        editar(id)
+                    )
+                )
+
+                # ==============================================
+                # ELIMINAR
+                # ==============================================
+
+                eliminar_boton = ft.Container(
+
+                    expand=True,
+
+                    alignment=ft.Alignment(0, 0),
+
+                    content=ft.IconButton(
+
+                        icon=ft.Icons.DELETE,
+
+                        icon_color=ROJO,
+
+                        icon_size=22,
+
+                        tooltip="Eliminar empleado",
+
+                        on_click=lambda e,
+                        id=empleado.id:
+                        confirmar_eliminar(id)
+                    )
+                )
+
+                # ==============================================
+                # AGREGAR FILA
+                # ==============================================
+
                 tabla.rows.append(
+
                     ft.DataRow(
+
                         cells=[
-            
-                            # ESTADO
+
                             ft.DataCell(
-
-                                ft.Switch(
-
-                                    value=bool(
-                                        empleado.activo
-                                    ),
-
-                                    active_color=PURPURA
-                                )
+                                estado
                             ),
 
-                           
-                            # NOMBRE
                             ft.DataCell(
-
-                                ft.Row(
-
-                                    spacing=10,
-
-                                    controls=[
-
-                                        ft.CircleAvatar(
-
-                                            radius=20,
-
-                                            bgcolor=LILA,
-
-                                            content=ft.Icon(
-
-                                                ft.Icons.PERSON,
-
-                                                color=VIOLETA
-                                            )
-                                        ),
-
-                                        ft.Text(
-
-                                            f"{empleado.nombre} "
-                                            f"{empleado.apellido_paterno}",
-
-                                            size=15,
-
-                                            weight=ft.FontWeight.BOLD,
-
-                                            color="#333333"
-                                        )
-                                    ]
-                                )
+                                nombre
                             ),
 
-                            # USUARIO
                             ft.DataCell(
-                                ft.Text(
-                                    empleado.usuario
-                                    if empleado.usuario
-                                    else "",
-                                    color="#333333",
-                                    weight=ft.FontWeight.BOLD
-                                )
+                                usuario
                             ),
 
-                            # ROL
                             ft.DataCell(
-                                ft.Container(
-                                    padding=8,
-                                    bgcolor="#EBD7F2",
-                                    border_radius=20,
-                                    content=ft.Text(
-                                        empleado.puesto_usuario
-                                        if empleado.puesto_usuario
-                                        else "Sin rol",
-                                        color=VIOLETA,
-                                        weight=ft.FontWeight.BOLD
-                                    )
-                                )
+                                rol
                             ),
 
-                            # EDITAR
                             ft.DataCell(
-                                ft.IconButton(
-                                    icon=ft.Icons.EDIT,
-                                    icon_color=PURPURA,
-                                    tooltip="Editar empleado",
-                                    on_click=lambda e,
-                                    id=empleado.id:
-                                    editar(id)
-                                )
+                                editar_boton
                             ),
 
-                            # ELIMINAR
                             ft.DataCell(
-                                ft.IconButton(
-                                    icon=ft.Icons.DELETE,
-                                    icon_color=ROJO,
-                                    tooltip="Eliminar empleado",
-                                    on_click=lambda e,
-                                    id=empleado.id:
-                                    confirmar_eliminar(id)
-                                )
+                                eliminar_boton
                             )
                         ]
                     )
@@ -400,21 +686,31 @@ def empleados_list(regresar, agregar_empleado):
             mensaje.color = ROJO
 
         if e:
-
             e.page.update()
 
+    # ==========================================================
+    # TITULO
+    # ==========================================================
 
-    # TÍTULO
     titulo = ft.Row(
+
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+
+        vertical_alignment=(
+            ft.CrossAxisAlignment.CENTER
+        ),
+
         controls=[
+
             ft.Column(
+
                 spacing=2,
+
                 controls=[
+
                     ft.Text(
                         "Empleados",
-                        size=32,
+                        size=30,
                         weight=ft.FontWeight.BOLD,
                         color=VIOLETA
                     ),
@@ -422,55 +718,118 @@ def empleados_list(regresar, agregar_empleado):
                     ft.Text(
                         "Administración de empleados",
                         color=PURPURA,
-                        size=14
+                        size=13,
+                        weight=ft.FontWeight.BOLD
                     )
                 ]
             ),
 
-            # AGREGAR EMPLEADO
+            # ==================================================
+            # AGREGAR
+            # ==================================================
+
             ft.ElevatedButton(
+
                 content=ft.Text(
-                    "Agregar empleado"
+                    "Agregar empleado",
+                    weight=ft.FontWeight.BOLD
                 ),
 
                 icon=ft.Icons.PERSON_ADD,
+
                 bgcolor=VIOLETA,
+
                 color=BLANCO,
+
+                style=ft.ButtonStyle(
+
+                    shape=ft.RoundedRectangleBorder(
+                        radius=10
+                    )
+                ),
+
                 on_click=lambda e:
                 agregar_empleado()
             )
         ]
     )
 
+    # ==========================================================
+    # CONTENEDOR DE LA TABLA
+    # ==========================================================
+
     tabla_container = ft.Container(
-        width=1100,
-        height=500,
+
+        # TABLA MÁS PEQUEÑA
+        width=900,
+
+        # TABLA MÁS BAJA
+        height=430,
+
         bgcolor=BLANCO,
-        padding=15,
-        border_radius=15,
+
+        padding=10,
+
+        border_radius=12,
+
         content=ft.Column(
+
             expand=True,
+
             scroll=ft.ScrollMode.AUTO,
+
             controls=[
 
                 ft.Row(
+
                     controls=[tabla],
+
+                    alignment=(
+                        ft.MainAxisAlignment.CENTER
+                    ),
+
+                    vertical_alignment=(
+                        ft.CrossAxisAlignment.CENTER
+                    ),
+
                     scroll=ft.ScrollMode.AUTO
                 )
             ]
         )
     )
 
-    # BOTÓN REGRESAR
+    # ==========================================================
+    # BOTON REGRESAR
+    # ==========================================================
+
     botones = ft.Row(
+
         alignment=ft.MainAxisAlignment.START,
+
         controls=[
+
             ft.OutlinedButton(
+
                 content=ft.Text(
-                    "Regresar"
+                    "Regresar",
+                    weight=ft.FontWeight.BOLD
                 ),
 
                 icon=ft.Icons.ARROW_BACK,
+
+                style=ft.ButtonStyle(
+
+                    color=VIOLETA,
+
+                    side=ft.BorderSide(
+                        width=1,
+                        color=LILA
+                    ),
+
+                    shape=ft.RoundedRectangleBorder(
+                        radius=10
+                    )
+                ),
 
                 on_click=lambda e:
                 regresar()
@@ -478,23 +837,45 @@ def empleados_list(regresar, agregar_empleado):
         ]
     )
 
+    # ==========================================================
+    # CARGAR DATOS
+    # ==========================================================
+
     cargar_tabla()
 
+    # ==========================================================
+    # INTERFAZ
+    # ==========================================================
+
     return ft.Container(
+
         expand=True,
+
         bgcolor=FONDO,
+
         padding=15,
+
         content=ft.Column(
-            spacing=10,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+
+            spacing=8,
+
+            horizontal_alignment=(
+                ft.CrossAxisAlignment.CENTER
+            ),
+
             controls=[
+
                 titulo,
+
                 ft.Divider(
                     color=LILA,
                     height=1
                 ),
+
                 tabla_container,
+
                 botones,
+
                 mensaje
             ]
         )
