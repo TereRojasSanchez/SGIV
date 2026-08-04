@@ -501,7 +501,10 @@ def ver_empleados():
             print("\nNo hay empleados registrados.")
 
         else:
+
             print("\n========== LISTA DE EMPLEADOS ==========")
+
+
             for empleado in lista:
 
                 print(f"""
