@@ -8,23 +8,32 @@ class VentasDAO:
     # OBTENER TODAS LAS VENTAS
     
     def obtener_todo(self):
+
         conexion = Conexion.obtener_conexion()
         cursor = conexion.cursor()
 
         sql = """
-        SELECT id, fecha_venta, producto_nombre,
-               producto_precio_venta, cantidad,
-               subtotal, total, id_producto
+        SELECT id,
+               fecha_venta,
+               producto_nombre,
+               producto_precio_venta,
+               cantidad,
+               subtotal,
+               total,
+               id_producto,
+               estado
         FROM "Ventas"
         ORDER BY id
         """
 
         cursor.execute(sql)
+
         registros = cursor.fetchall()
 
         ventas = []
 
         for registro in registros:
+
             venta = Ventas(
                 registro[0],
                 registro[1],
@@ -33,7 +42,8 @@ class VentasDAO:
                 registro[4],
                 registro[5],
                 registro[6],
-                registro[7]
+                registro[7],
+                registro[8]
             )
 
             ventas.append(venta)
@@ -44,9 +54,10 @@ class VentasDAO:
         return ventas
 
     
-    # INSERTAR
+    # INSERTAR VENTA
     
     def insertar(self, venta):
+
         conexion = Conexion.obtener_conexion()
         cursor = conexion.cursor()
 
@@ -60,9 +71,10 @@ class VentasDAO:
             cantidad,
             subtotal,
             total,
-            id_producto
+            id_producto,
+            estado
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
 
         cursor.execute(sql, (
@@ -73,17 +85,20 @@ class VentasDAO:
             venta.cantidad,
             venta.subtotal,
             venta.total,
-            venta.id_producto
+            venta.id_producto,
+            venta.estado
         ))
 
         conexion.commit()
+
         cursor.close()
         conexion.close()
 
     
-    # ACTUALIZAR
+    # ACTUALIZAR VENTA
     
     def actualizar(self, venta):
+
         conexion = Conexion.obtener_conexion()
         cursor = conexion.cursor()
 
@@ -95,13 +110,12 @@ class VentasDAO:
             cantidad = %s,
             subtotal = %s,
             total = %s,
-            id_producto = %s
+            id_producto = %s,
+            estado = %s
         WHERE id = %s
         """
 
-        cursor.execute((
-            sql
-        ), (
+        cursor.execute(sql, (
             venta.fecha_venta,
             venta.producto_nombre,
             venta.producto_precio_venta,
@@ -109,17 +123,20 @@ class VentasDAO:
             venta.subtotal,
             venta.total,
             venta.id_producto,
+            venta.estado,
             venta.id
         ))
 
         conexion.commit()
+
         cursor.close()
         conexion.close()
 
-    
-    # ELIMINAR
+   
+    # ELIMINAR VENTA
     
     def eliminar(self, id):
+
         conexion = Conexion.obtener_conexion()
         cursor = conexion.cursor()
 
@@ -131,25 +148,75 @@ class VentasDAO:
         cursor.execute(sql, (id,))
 
         conexion.commit()
+
         cursor.close()
         conexion.close()
 
-    
+
     # OBTENER ÚLTIMO ID
     
     def obtener_ultimo_id(self):
+
         conexion = Conexion.obtener_conexion()
         cursor = conexion.cursor()
 
         sql = """
-        SELECT COALESCE(MAX(id), 0)
+        SELECT COALESCE(MAX(id),0)
         FROM "Ventas"
         """
 
         cursor.execute(sql)
-        resultado = cursor.fetchone()
+
+        ultimo = cursor.fetchone()[0]
 
         cursor.close()
         conexion.close()
 
-        return resultado[0]
+        return ultimo
+
+    
+    # OBTENER PRODUCTO POR ID
+    
+    def obtener_producto(self, id_producto):
+
+        conexion = Conexion.obtener_conexion()
+        cursor = conexion.cursor()
+
+        sql = """
+        SELECT id,
+               nombre,
+               precio_producto,
+               existencia
+        FROM producto
+        WHERE id = %s
+        """
+
+        cursor.execute(sql, (id_producto,))
+
+        producto = cursor.fetchone()
+
+        cursor.close()
+        conexion.close()
+
+        return producto
+
+    
+    # DESCONTAR EXISTENCIA
+    
+    def actualizar_existencia(self, id_producto, cantidad_vendida):
+
+        conexion = Conexion.obtener_conexion()
+        cursor = conexion.cursor()
+
+        sql = """
+        UPDATE producto
+        SET existencia = existencia - %s
+        WHERE id = %s
+        """
+
+        cursor.execute(sql, (cantidad_vendida, id_producto))
+
+        conexion.commit()
+
+        cursor.close()
+        conexion.close()

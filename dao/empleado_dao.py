@@ -4,140 +4,407 @@ from models.empleado import Empleado
 
 class EmpleadoDAO:
 
-    # ==========================
-    # OBTENER TODOS
-    # ==========================
     def obtener_todo(self):
-        conexion = Conexion.obtener_conexion()
-        cursor = conexion.cursor()
 
-        sql = """
-        SELECT id, nombre, apellido_p, apellido_m,
-               usuario_puesto, contraseña
-        FROM "Empleado"
-        ORDER BY id
-        """
+        conexion = None
+        cursor = None
 
-        cursor.execute(sql)
-        registros = cursor.fetchall()
+        try:
 
-        empleados = []
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
 
-        for registro in registros:
-            empleado = Empleado(
-                registro[0],
-                registro[1],
-                registro[2],
-                registro[3],
-                registro[4],
-                registro[5]
+            sql = """
+                SELECT
+                    id,
+                    nombre,
+                    apellido_paterno,
+                    apellido_materno,
+                    telefono,
+                    correo,
+                    usuario,
+                    contraseña,
+                    municipio,
+                    codigo_postal,
+                    colonia,
+                    calle,
+                    numero_exterior,
+                    numero_interior,
+                    activo,
+                    puesto_usuario
+                FROM "Empleado"
+                ORDER BY id;
+            """
+
+            cursor.execute(sql)
+
+            empleados = []
+
+            for fila in cursor.fetchall():
+
+                empleado = Empleado(
+                    fila[0],
+                    fila[1],
+                    fila[2],
+                    fila[3],
+                    fila[4],
+                    fila[5],
+                    fila[6],
+                    fila[7],
+                    fila[8],
+                    fila[9],
+                    fila[10],
+                    fila[11],
+                    fila[12],
+                    fila[13],
+                    fila[14],
+                    fila[15]
+                )
+
+                empleados.append(empleado)
+
+            return empleados
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
+
+
+    
+    # OBTENER EMPLEADO POR ID
+    def obtener_por_id(self, empleado_id):
+
+        conexion = None
+        cursor = None
+
+        try:
+
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
+
+            sql = """
+                SELECT
+                    id,
+                    nombre,
+                    apellido_paterno,
+                    apellido_materno,
+                    telefono,
+                    correo,
+                    usuario,
+                    contraseña,
+                    municipio,
+                    codigo_postal,
+                    colonia,
+                    calle,
+                    numero_exterior,
+                    numero_interior,
+                    activo,
+                    puesto_usuario
+                FROM "Empleado"
+                WHERE id = %s;
+            """
+
+            cursor.execute(
+                sql,
+                (empleado_id,)
             )
 
-            empleados.append(empleado)
+            fila = cursor.fetchone()
 
-        cursor.close()
-        conexion.close()
+            if fila:
 
-        return empleados
+                return Empleado(
+                    fila[0],
+                    fila[1],
+                    fila[2],
+                    fila[3],
+                    fila[4],
+                    fila[5],
+                    fila[6],
+                    fila[7],
+                    fila[8],
+                    fila[9],
+                    fila[10],
+                    fila[11],
+                    fila[12],
+                    fila[13],
+                    fila[14],
+                    fila[15]
+                )
 
-    # ==========================
-    # INSERTAR
-    # ==========================
+            return None
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
+
+    # INSERTAR EMPLEADO
     def insertar(self, empleado):
-        conexion = Conexion.obtener_conexion()
-        cursor = conexion.cursor()
 
-        sql = """
-        INSERT INTO "Empleado"
-        (
-            id,
-            nombre,
-            apellido_p,
-            apellido_m,
-            usuario_puesto,
-            contraseña
-        )
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """
+        conexion = None
+        cursor = None
 
-        cursor.execute(sql, (
-            empleado.id,
-            empleado.nombre,
-            empleado.apellido_p,
-            empleado.apellido_m,
-            empleado.usuario_puesto,
-            empleado.contraseña
-        ))
+        try:
 
-        conexion.commit()
-        cursor.close()
-        conexion.close()
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
 
-    # ==========================
-    # ACTUALIZAR
-    # ==========================
+            sql = """
+                INSERT INTO "Empleado"
+                (
+                    nombre,
+                    apellido_paterno,
+                    apellido_materno,
+                    telefono,
+                    correo,
+                    usuario,
+                    contraseña,
+                    municipio,
+                    codigo_postal,
+                    colonia,
+                    calle,
+                    numero_exterior,
+                    numero_interior,
+                    activo,
+                    puesto_usuario
+                )
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                );
+            """
+
+            valores = (
+                empleado.nombre,
+                empleado.apellido_paterno,
+                empleado.apellido_materno,
+                empleado.telefono,
+                empleado.correo,
+                empleado.usuario,
+                empleado.contraseña,
+                empleado.municipio,
+                empleado.codigo_postal,
+                empleado.colonia,
+                empleado.calle,
+                empleado.numero_exterior,
+                empleado.numero_interior,
+                empleado.activo,
+                empleado.puesto_usuario
+            )
+
+            cursor.execute(
+                sql,
+                valores
+            )
+
+            conexion.commit()
+
+        except Exception as error:
+
+            if conexion:
+                conexion.rollback()
+
+            raise error
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
+    # ACTUALIZAR EMPLEADO
+
     def actualizar(self, empleado):
-        conexion = Conexion.obtener_conexion()
-        cursor = conexion.cursor()
+        conexion = None
+        cursor = None
 
-        sql = """
-        UPDATE "Empleado"
-        SET
-            nombre = %s,
-            apellido_p = %s,
-            apellido_m = %s,
-            usuario_puesto = %s,
-            contraseña = %s
-        WHERE id = %s
-        """
+        try:
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
 
-        cursor.execute(sql, (
-            empleado.nombre,
-            empleado.apellido_p,
-            empleado.apellido_m,
-            empleado.usuario_puesto,
-            empleado.contraseña,
-            empleado.id
-        ))
+            sql = """
+                UPDATE "Empleado"
+                SET
+                    nombre = %s,
+                    apellido_paterno = %s,
+                    apellido_materno = %s,
+                    telefono = %s,
+                    correo = %s,
+                    usuario = %s,
+                    contraseña = %s,
+                    municipio = %s,
+                    codigo_postal = %s,
+                    colonia = %s,
+                    calle = %s,
+                    numero_exterior = %s,
+                    numero_interior = %s,
+                    activo = %s,
+                    puesto_usuario = %s
+                WHERE id = %s;
+            """
 
-        conexion.commit()
-        cursor.close()
-        conexion.close()
+            valores = (
+                empleado.nombre,
+                empleado.apellido_paterno,
+                empleado.apellido_materno,
+                empleado.telefono,
+                empleado.correo,
+                empleado.usuario,
+                empleado.contraseña,
+                empleado.municipio,
+                empleado.codigo_postal,
+                empleado.colonia,
+                empleado.calle,
+                empleado.numero_exterior,
+                empleado.numero_interior,
+                empleado.activo,
+                empleado.puesto_usuario,
+                empleado.id
+            )
 
-    # ==========================
-    # ELIMINAR
-    # ==========================
-    def eliminar(self, id):
-        conexion = Conexion.obtener_conexion()
-        cursor = conexion.cursor()
+            cursor.execute(
+                sql,
+                valores
+            )
 
-        sql = """
-        DELETE FROM "Empleado"
-        WHERE id = %s
-        """
+            if cursor.rowcount == 0:
 
-        cursor.execute(sql, (id,))
+                raise Exception(
+                    "No se encontró el empleado que deseas actualizar."
+                )
 
-        conexion.commit()
-        cursor.close()
-        conexion.close()
+            conexion.commit()
 
-    # ==========================
-    # OBTENER ÚLTIMO ID
-    # ==========================
-    def obtener_ultimo_id(self):
-        conexion = Conexion.obtener_conexion()
-        cursor = conexion.cursor()
+        except Exception as error:
 
-        sql = """
-        SELECT COALESCE(MAX(id), 0)
-        FROM "Empleado"
-        """
+            if conexion:
+                conexion.rollback()
 
-        cursor.execute(sql)
-        resultado = cursor.fetchone()
+            raise error
 
-        cursor.close()
-        conexion.close()
+        finally:
 
-        return resultado[0]
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
+
+
+    def eliminar(self, empleado_id):
+
+        conexion = None
+        cursor = None
+
+        try:
+
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
+
+            sql = """
+                UPDATE "Empleado"
+                SET activo = FALSE
+                WHERE id = %s;
+            """
+
+            cursor.execute(
+                sql,
+                (empleado_id,)
+            )
+
+            if cursor.rowcount == 0:
+
+                conexion.rollback()
+
+                raise Exception(
+                    "No se encontró el empleado con ese ID."
+                )
+
+            conexion.commit()
+
+            return True
+
+        except Exception as error:
+
+            if conexion:
+                conexion.rollback()
+
+            raise Exception(
+                f"No se pudo eliminar el empleado: {error}"
+            )
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
+
+    # ACTIVAR EMPLEADO
+
+    def activar(self, empleado_id):
+        conexion = None
+        cursor = None
+
+        try:
+            conexion = Conexion.obtener_conexion()
+            cursor = conexion.cursor()
+            sql = """
+                UPDATE "Empleado"
+                SET activo = TRUE
+                WHERE id = %s;
+            """
+
+            cursor.execute(
+                sql,
+                (empleado_id,)
+            )
+
+            if cursor.rowcount == 0:
+
+                conexion.rollback()
+
+                raise Exception(
+                    "No se encontró el empleado con ese ID."
+                )
+
+            conexion.commit()
+            return True
+
+        except Exception as error:
+
+            if conexion:
+                conexion.rollback()
+            raise error
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if conexion:
+                conexion.close()
