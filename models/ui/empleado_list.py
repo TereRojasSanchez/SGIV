@@ -223,7 +223,7 @@ def empleados_list(regresar, agregar_empleado):
                 return
 
             tabla_container.content = empleado_form(
-                regresar,
+                volver_tabla,
                 empleado
             )
 
@@ -797,6 +797,37 @@ def empleados_list(regresar, agregar_empleado):
             ]
         )
     )
+
+        # ==========================================================
+    # VOLVER A LA TABLA DESDE EDITAR
+    # ==========================================================
+
+    def volver_tabla():
+
+        tabla_container.content = ft.Column(
+
+            expand=True,
+
+            scroll=ft.ScrollMode.AUTO,
+
+            controls=[
+
+                ft.Row(
+
+                    controls=[tabla],
+
+                    alignment=ft.MainAxisAlignment.CENTER,
+
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+
+                    scroll=ft.ScrollMode.AUTO
+                )
+            ]
+        )
+
+        cargar_tabla()
+
+        tabla_container.update()
 
     # ==========================================================
     # BOTON REGRESAR

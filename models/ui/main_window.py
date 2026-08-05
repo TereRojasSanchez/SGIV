@@ -6,6 +6,7 @@ from models.ui.mascota_form import mascota_form
 from models.ui.mascota_list import mascota_list
 from models.ui.ventas_form import ventas_form
 from models.ui.ventas_list import ventas_list
+from models.ui.dashboard import dashboard
 
 
 VIOLETA = "#683266"
@@ -16,11 +17,6 @@ BLANCO = "#FFFFFF"
 
 
 def main_window(page: ft.Page):
-
-    # ==========================
-    # CONFIGURACIÓN
-    # ==========================
-
     page.title = "Sistema de Gestión Veterinaria"
     page.assets_dir = "assets"
     page.window.width = 1400
@@ -29,52 +25,20 @@ def main_window(page: ft.Page):
     page.spacing = 0
     page.bgcolor = FONDO
 
-
-    # ==========================
     # CONTENIDO PRINCIPAL
-    # ==========================
-
     contenido = ft.Container(
         expand=True,
         padding=30,
         bgcolor=FONDO
     )
 
-
-    # ==========================
     # INICIO
-    # ==========================
-
     def mostrar_inicio(e=None):
+            contenido.content = dashboard()
+            page.update()
 
-        contenido.content = ft.Column(
-            controls=[
-
-                ft.Text(
-                    "Bienvenido",
-                    size=35,
-                    weight=ft.FontWeight.BOLD,
-                    color=VIOLETA
-                ),
-
-                ft.Text(
-                    "Sistema de Gestión Veterinaria",
-                    size=20,
-                    color=PURPURA
-                )
-
-            ]
-        )
-
-        page.update()
-
-
-    # ==========================
     # EMPLEADOS
-    # ==========================
-
     def mostrar_empleados(e=None):
-
         contenido.content = empleados_list(
             mostrar_inicio,
             mostrar_formulario
@@ -82,11 +46,7 @@ def main_window(page: ft.Page):
 
         page.update()
 
-
-    # ==========================
     # FORMULARIO EMPLEADO
-    # ==========================
-
     def mostrar_formulario(e=None):
 
         contenido.content = empleado_form(
@@ -95,13 +55,8 @@ def main_window(page: ft.Page):
 
         page.update()
 
-
-    # ==========================
     # MASCOTAS
-    # ==========================
-
     def mostrar_mascotas(e=None):
-
         contenido.content = mascota_list(
             mostrar_inicio,
             mostrar_formulario_mascota
@@ -110,10 +65,7 @@ def main_window(page: ft.Page):
         page.update()
 
 
-    # ==========================
     # FORMULARIO MASCOTA
-    # ==========================
-
     def mostrar_formulario_mascota(
         mascota=None
     ):
@@ -125,13 +77,8 @@ def main_window(page: ft.Page):
 
         page.update()
 
-
-    # ==========================
     # VENTAS
-    # ==========================
-
     def mostrar_ventas(e=None):
-
         contenido.content = ventas_list(
             agregar_venta=mostrar_formulario_venta,
             regresar=mostrar_inicio
@@ -139,11 +86,7 @@ def main_window(page: ft.Page):
 
         page.update()
 
-
-    # ==========================
     # FORMULARIO VENTA
-    # ==========================
-
     def mostrar_formulario_venta(
         e=None,
         venta=None
@@ -157,21 +100,13 @@ def main_window(page: ft.Page):
 
         page.update()
 
-
-    # ==========================
     # HEADER
-    # ==========================
-
+    
     header = ft.Container(
-
         height=80,
-
         bgcolor=VIOLETA,
-
         padding=20,
-
         content=ft.Row(
-
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
 
             controls=[
@@ -217,9 +152,8 @@ def main_window(page: ft.Page):
     )
 
 
-    # ==========================
+    
     # BOTÓN DEL MENÚ
-    # ==========================
 
     def boton_menu(
         texto,
@@ -228,19 +162,12 @@ def main_window(page: ft.Page):
     ):
 
         return ft.OutlinedButton(
-
             content=ft.Text(texto),
-
             icon=icono,
-
             width=200,
-
             on_click=evento,
-
             style=ft.ButtonStyle(
-
                 color=VIOLETA,
-
                 side=ft.BorderSide(
                     width=1,
                     color=LILA
@@ -254,56 +181,30 @@ def main_window(page: ft.Page):
 
         )
 
-
-    # ==========================
     # MENÚ LATERAL
-    # ==========================
-
     menu = ft.Container(
-
         width=240,
-
         bgcolor=BLANCO,
-
         padding=20,
-
         content=ft.Column(
-
             spacing=15,
-
             controls=[
 
-
-                # ==========================
                 # LOGO
-                # ==========================
 
                 ft.Container(
-
                     height=130,
-
                     border_radius=15,
-
                     alignment=ft.Alignment(0, 0),
-
                     content=ft.Image(
-
                         src="icons/logo.png.jpeg",
-
                         width=170,
-
-                        height=110,
-
-                        fit=ft.BoxFit.CONTAIN
+                        height=210,
+                        fit="contain"
 
                     )
 
                 ),
-
-
-                # ==========================
-                # INICIO
-                # ==========================
 
                 boton_menu(
                     "Inicio",
@@ -311,21 +212,11 @@ def main_window(page: ft.Page):
                     mostrar_inicio
                 ),
 
-
-                # ==========================
-                # EMPLEADOS
-                # ==========================
-
                 boton_menu(
                     "Empleados",
                     ft.Icons.BADGE,
                     mostrar_empleados
                 ),
-
-
-                # ==========================
-                # MASCOTAS
-                # ==========================
 
                 boton_menu(
                     "Mascotas",
@@ -334,29 +225,18 @@ def main_window(page: ft.Page):
                 ),
 
 
-                # ==========================
-                # CITAS
-                # ==========================
-
                 boton_menu(
                     "Citas",
                     ft.Icons.CALENDAR_MONTH
                 ),
 
 
-                # ==========================
-                # PRODUCTOS
-                # ==========================
-
+        
                 boton_menu(
                     "Productos",
                     ft.Icons.INVENTORY
                 ),
 
-
-                # ==========================
-                # VENTAS
-                # ==========================
 
                 boton_menu(
                     "Ventas",
@@ -364,10 +244,6 @@ def main_window(page: ft.Page):
                     mostrar_ventas
                 ),
 
-
-                # ==========================
-                # REPORTES
-                # ==========================
 
                 boton_menu(
                     "Reportes",
@@ -377,10 +253,6 @@ def main_window(page: ft.Page):
 
                 ft.Divider(),
 
-
-                # ==========================
-                # CERRAR SESIÓN
-                # ==========================
 
                 boton_menu(
                     "Cerrar sesión",
@@ -413,22 +285,15 @@ def main_window(page: ft.Page):
     )
 
 
-    # ==========================
+    
     # AGREGAR A LA PÁGINA
-    # ==========================
-
     page.add(
 
         ft.Column(
-
             expand=True,
-
             spacing=0,
-
             controls=[
-
                 header,
-
                 cuerpo
 
             ]
@@ -438,10 +303,5 @@ def main_window(page: ft.Page):
     )
 
 
-    # ==========================
-    # PANTALLA INICIAL
-    # ==========================
-
     mostrar_inicio()
-
     page.update()

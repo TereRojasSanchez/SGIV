@@ -1,8 +1,8 @@
-
 import flet as ft
 
 from dao.empleado_dao import EmpleadoDAO
 from models.empleado import Empleado
+
 
 # PALETA DE COLORES
 
@@ -16,7 +16,11 @@ BLANCO = "#FFFFFF"
 def empleado_form(regresar, empleado=None):
 
     dao = EmpleadoDAO()
-    # ESTILO DE LOS CAMPOS
+
+
+    # ==========================
+    # ESTILOS
+    # ==========================
 
     ESTILO_CAMPO = ft.TextStyle(
         weight=ft.FontWeight.BOLD,
@@ -24,11 +28,16 @@ def empleado_form(regresar, empleado=None):
         color="#333333"
     )
 
+
     ESTILO_ETIQUETA = ft.TextStyle(
         weight=ft.FontWeight.BOLD,
         color=VIOLETA
     )
-    # CAMPO
+
+
+    # ==========================
+    # CAMPOS
+    # ==========================
 
     nombre = ft.TextField(
         label="Nombre",
@@ -37,12 +46,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     apellido_paterno = ft.TextField(
         label="Apellido paterno",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
+
 
     apellido_materno = ft.TextField(
         label="Apellido materno",
@@ -51,12 +62,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     telefono = ft.TextField(
         label="Teléfono",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
+
 
     correo = ft.TextField(
         label="Correo",
@@ -65,12 +78,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     usuario = ft.TextField(
         label="Usuario",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
+
 
     contraseña = ft.TextField(
         label="Contraseña",
@@ -81,12 +96,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     municipio = ft.TextField(
         label="Municipio",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
+
 
     codigo_postal = ft.TextField(
         label="Código postal",
@@ -95,12 +112,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     colonia = ft.TextField(
         label="Colonia",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
+
 
     calle = ft.TextField(
         label="Calle",
@@ -109,6 +128,7 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     numero_exterior = ft.TextField(
         label="Número exterior",
         width=260,
@@ -116,13 +136,14 @@ def empleado_form(regresar, empleado=None):
         label_style=ESTILO_ETIQUETA
     )
 
+
     numero_interior = ft.TextField(
         label="Número interior",
         width=260,
         text_style=ESTILO_CAMPO,
         label_style=ESTILO_ETIQUETA
     )
-    # ROL
+
 
     puesto_usuario = ft.Dropdown(
         label="Rol",
@@ -134,7 +155,6 @@ def empleado_form(regresar, empleado=None):
         ]
     )
 
-    # MENSAJE
 
     mensaje = ft.Text(
         "",
@@ -142,51 +162,74 @@ def empleado_form(regresar, empleado=None):
         color=VIOLETA,
         weight=ft.FontWeight.BOLD
     )
-    # CARGAR DATOS PARA EDITAR
+
+
+    # ==========================
+    # CARGAR DATOS AL EDITAR
+    # ==========================
+
     if empleado:
 
         nombre.value = empleado.nombre or ""
+
         apellido_paterno.value = (
             empleado.apellido_paterno or ""
         )
+
         apellido_materno.value = (
             empleado.apellido_materno or ""
         )
+
         telefono.value = (
             empleado.telefono or ""
         )
+
         correo.value = (
             empleado.correo or ""
         )
+
         usuario.value = (
             empleado.usuario or ""
         )
+
         contraseña.value = (
             empleado.contraseña or ""
         )
+
         municipio.value = (
             empleado.municipio or ""
         )
+
         codigo_postal.value = (
             empleado.codigo_postal or ""
         )
+
         colonia.value = (
             empleado.colonia or ""
         )
+
         calle.value = (
             empleado.calle or ""
         )
+
         numero_exterior.value = (
             empleado.numero_exterior or ""
         )
+
         numero_interior.value = (
             empleado.numero_interior or ""
         )
+
         puesto_usuario.value = (
             empleado.puesto_usuario
         )
 
+            # ==========================
+    # LIMPIAR CAMPOS
+    # ==========================
+
     def limpiar():
+
         nombre.value = ""
         apellido_paterno.value = ""
         apellido_materno.value = ""
@@ -202,40 +245,70 @@ def empleado_form(regresar, empleado=None):
         numero_interior.value = ""
         puesto_usuario.value = None
 
+
+
+    # ==========================
     # GUARDAR / ACTUALIZAR
+    # ==========================
+
     def guardar(e):
+
         try:
-            # VALIDAR NOMBRE
+
             if not nombre.value or nombre.value.strip() == "":
 
                 mensaje.value = (
                     "El nombre es obligatorio"
                 )
+
                 mensaje.color = "red"
+
                 e.page.update()
+
                 return
 
+
+
             empleado_nuevo = Empleado(
+
                 empleado.id if empleado else None,
+
                 nombre.value.strip(),
+
                 apellido_paterno.value.strip(),
+
                 apellido_materno.value.strip(),
+
                 telefono.value.strip(),
+
                 correo.value.strip(),
+
                 usuario.value.strip(),
+
                 contraseña.value,
+
                 municipio.value.strip(),
+
                 codigo_postal.value.strip(),
+
                 colonia.value.strip(),
+
                 calle.value.strip(),
+
                 numero_exterior.value.strip(),
+
                 numero_interior.value.strip(),
+
                 True,
+
                 puesto_usuario.value
+
             )
 
-            # ACTUALIZAR
+
+
             if empleado:
+
                 dao.actualizar(
                     empleado_nuevo
                 )
@@ -244,7 +317,7 @@ def empleado_form(regresar, empleado=None):
                     "Empleado actualizado correctamente"
                 )
 
-            # INSERTAR
+
             else:
 
                 dao.insertar(
@@ -255,9 +328,13 @@ def empleado_form(regresar, empleado=None):
                     "Empleado registrado correctamente"
                 )
 
+
+
             mensaje.color = "green"
 
             e.page.update()
+
+
 
         except Exception as error:
 
@@ -269,14 +346,21 @@ def empleado_form(regresar, empleado=None):
 
             e.page.update()
 
+
+
+    # ==========================
     # FORMULARIO
+    # ==========================
+
     formulario = ft.Column(
 
         spacing=15,
 
+        scroll=ft.ScrollMode.AUTO,
+
         controls=[
 
-            # FILA 1
+
             ft.Row(
                 controls=[
                     nombre,
@@ -285,7 +369,8 @@ def empleado_form(regresar, empleado=None):
                 ]
             ),
 
-            # FILA 2
+
+
             ft.Row(
                 controls=[
                     telefono,
@@ -294,7 +379,8 @@ def empleado_form(regresar, empleado=None):
                 ]
             ),
 
-            # FILA 3
+
+
             ft.Row(
                 controls=[
                     contraseña,
@@ -302,7 +388,8 @@ def empleado_form(regresar, empleado=None):
                 ]
             ),
 
-            # FILA 4
+
+
             ft.Row(
                 controls=[
                     municipio,
@@ -311,7 +398,8 @@ def empleado_form(regresar, empleado=None):
                 ]
             ),
 
-            # FILA 5
+
+
             ft.Row(
                 controls=[
                     calle,
@@ -319,76 +407,145 @@ def empleado_form(regresar, empleado=None):
                     numero_interior
                 ]
             )
+
         ]
     )
 
+
+
+    # ==========================
     # BOTONES
+    # ==========================
 
     botones = ft.Row(
+
         spacing=20,
+
         controls=[
+
+
             ft.ElevatedButton(
+
                 content=ft.Text(
+
                     "Actualizar empleado"
                     if empleado
                     else "Guardar empleado",
+
                     weight=ft.FontWeight.BOLD
+
                 ),
 
                 icon=ft.Icons.SAVE,
+
                 bgcolor=VIOLETA,
+
                 color=BLANCO,
+
                 on_click=guardar
+
             ),
 
+
+
             ft.OutlinedButton(
+
                 content=ft.Text(
+
                     "Cancelar",
+
                     weight=ft.FontWeight.BOLD
+
                 ),
 
                 icon=ft.Icons.ARROW_BACK,
+
                 on_click=lambda e: regresar()
+
             )
+
         ]
+
     )
 
 
-    # VISTA
+
+    # ==========================
+    # VISTA FINAL CORREGIDA
+    # ==========================
+
     return ft.Container(
+
         expand=True,
+
         bgcolor=FONDO,
+
         padding=25,
+
+
         content=ft.Column(
+
+            expand=True,
+
             spacing=18,
+
+            scroll=ft.ScrollMode.AUTO,
+
+
             controls=[
 
-                # TÍTULO
+
                 ft.Text(
+
                     "Editar empleado"
                     if empleado
                     else "Crear empleado",
+
                     size=32,
+
                     weight=ft.FontWeight.BOLD,
+
                     color=VIOLETA
+
                 ),
 
-                # DESCRIPCIÓN
+
+
                 ft.Text(
+
                     "Complete la información del empleado.",
+
                     color=PURPURA,
+
                     size=15,
+
                     weight=ft.FontWeight.BOLD
+
                 ),
 
-                # SEPARADOR
+
+
                 ft.Divider(
+
                     color=LILA
+
                 ),
+
+
 
                 formulario,
+
+
+
                 botones,
+
+
+
                 mensaje
+
+
             ]
+
         )
+
     )
